@@ -3,73 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>40Lello Food Contest</title>
+    <title>40Lello Food Contest & Records</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --dark: #1a1a1a; }
+        :root { --gold: #D4AF37; --dark: #1a1a1a; --grey: #2a2a2a; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
-        h1 { opacity: 0; animation: fadeIn 1s ease forwards 0.5s; font-size: 1.5rem; margin-bottom: 20px; color: var(--gold); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 1.5rem; color: var(--gold); margin-bottom: 20px; }
         
+        /* Griglia e Cards */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: #2a2a2a; border-radius: 15px; padding: 10px; cursor: pointer; animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both; position: relative; }
+        .card { background: var(--grey); border-radius: 15px; padding: 10px; cursor: pointer; position: relative; transition: 0.3s; }
         .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; }
-        .card p { margin: 10px 0 5px; font-size: 0.9rem; }
-        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
-        .focus-card { width: 85%; max-width: 400px; background: #333; padding: 20px; border-radius: 20px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
-        .focus-card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
-        
-        .stars { margin: 20px 0; font-size: 2.5rem; }
-        .star { color: #555; cursor: pointer; transition: 0.2s; padding: 0 5px; }
-        .star.active { color: var(--gold); text-shadow: 0 0 15px var(--gold); }
-
         .voted-badge { position: absolute; top: 5px; right: 5px; background: var(--gold); color: black; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; display: none; font-weight: bold; }
         
-        #area-invio { display: none; margin-top: 30px; animation: fadeIn 0.5s ease; }
-        textarea { width: 90%; max-width: 400px; height: 80px; border-radius: 12px; padding: 12px; background: #2a2a2a; color: white; border: 1px solid #444; font-family: inherit; margin-bottom: 15px; }
-        textarea:focus { border-color: var(--gold); outline: none; }
+        /* Overlay Votazione */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
+        .focus-card { width: 85%; max-width: 400px; background: #333; padding: 20px; border-radius: 20px; }
+        .focus-card img { width: 100%; border-radius: 15px; }
+        .stars { margin: 20px 0; font-size: 2.5rem; }
+        .star { color: #555; cursor: pointer; padding: 0 5px; }
+        .star.active { color: var(--gold); text-shadow: 0 0 15px var(--gold); }
+
+        /* Form e Input */
+        textarea { width: 90%; max-width: 400px; height: 80px; border-radius: 12px; padding: 12px; background: var(--grey); color: white; border: 1px solid #444; margin: 15px 0; font-family: inherit; }
+        .btn { padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; margin: 10px; }
+        .btn-gold { background: var(--gold); color: black; }
+        .btn-skip { background: transparent; color: #888; border: 1px solid #444; }
         
-        #btnInvia { padding: 15px 40px; background: var(--gold); border: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: black; }
+        #step1, #step2 { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #loader { display:none; color: var(--gold); margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>Vota i Piatti!</h1>
-
-    <div class="grid">
-        <div class="card" onclick="openVote(0)" style="animation-delay: 0.1s">
-            <div class="voted-badge" id="badge0">OK</div>
-            <img src="patate.jpeg">
-            <p>Pasta e Patate</p>
+    <div id="step1">
+        <h1>Vota i Piatti!!!</h1>
+        <div class="grid">
+            <div class="card" onclick="openVote(0)">
+                <div class="voted-badge" id="badge0">OK</div>
+                <img src="patate.jpeg">
+                <p>Pasta e Patate</p>
+            </div>
+            <div class="card" onclick="openVote(1)">
+                <div class="voted-badge" id="badge1">OK</div>
+                <img src="frittata.jpeg">
+                <p>Frittata</p>
+            </div>
+            <div class="card" onclick="openVote(2)">
+                <div class="voted-badge" id="badge2">OK</div>
+                <img src="insalata.jpeg">
+                <p>Pasta Insalata</p>
+            </div>
+            <div class="card" onclick="openVote(3)">
+                <div class="voted-badge" id="badge3">OK</div>
+                <img src="rustica.jpeg">
+                <p>Pizza rustica</p>
+            </div>
         </div>
-        <div class="card" onclick="openVote(1)" style="animation-delay: 0.2s">
-            <div class="voted-badge" id="badge1">OK</div>
-            <img src="frittata.jpeg">
-            <p>Frittata</p>
-        </div>
-        <div class="card" onclick="openVote(2)" style="animation-delay: 0.3s">
-            <div class="voted-badge" id="badge2">OK</div>
-            <img src="insalata.jpeg">
-            <p>Pasta all'insalata</p>
-        </div>
-        <div class="card" onclick="openVote(3)" style="animation-delay: 0.4s">
-            <div class="voted-badge" id="badge3">OK</div>
-            <img src="https://via.placeholder.com/300x200?text=In+Arrivo" id="img3">
-            <p>Pizza rustica</p>
+        <div id="area-invio-voto" style="display:none; margin-top:30px;">
+            <textarea id="commentoVoto" placeholder="Commento veloce sui piatti..."></textarea><br>
+            <button class="btn btn-gold" onclick="inviaVoti()">INVIA VALUTAZIONE 🚀</button>
         </div>
     </div>
 
-    <div id="area-invio">
-        <textarea id="commento" placeholder="Lascia un commento (facoltativo)..."></textarea><br>
-        <button id="btnInvia" onclick="inviaTutto()">INVIA IL TUO VOTO 🚀</button>
+    <div id="step2" style="display:none;">
+        <h1 style="margin-top:40px;">📸 Un ricordo per Lello</h1>
+        <p>Carica una foto della serata e scrivi una dedica!</p>
+        <input type="file" id="fileInput" accept="image/*" style="color:white; margin:20px 0;"><br>
+        <textarea id="dedica" placeholder="Scrivi un messaggio d'auguri..."></textarea><br>
+        <button id="btnFoto" class="btn btn-gold" onclick="caricaFoto()">SALVA RICORDO 💾</button>
+        <br>
+        <button class="btn btn-skip" onclick="chiudiTutto()">SALTA / FINE 🏁</button>
+        <div id="loader">Caricamento in corso... attendi...</div>
     </div>
 
     <div id="overlay">
         <div class="focus-card">
             <img src="" id="focusImg">
-            <h2 id="focusTitle" style="margin-top:0"></h2>
+            <h2 id="focusTitle" style="margin-top:10px"></h2>
             <div class="stars">
                 <span class="star" onclick="setRating(1)">★</span>
                 <span class="star" onclick="setRating(2)">★</span>
@@ -77,21 +89,20 @@
                 <span class="star" onclick="setRating(4)">★</span>
                 <span class="star" onclick="setRating(5)">★</span>
             </div>
-            <p style="color:#888; font-size:0.9rem">Tocca le stelle per votare</p>
+            <p style="color:#888;">Tocca le stelle per votare</p>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdx_4W_33ZCVrGMrjldtKCmzL25ozf60GM_ufCUu4ZNmoaeW6Uiazf8-sLDVMeKMMwug/exec"; // <--- METTI IL TUO URL DI GOOGLE QUI
-        let piatti = ["Pasta e Patate", "Frittata", "Pasta all'insalata", "Antipasto"];
-        let immagini = ["patate.jpeg", "frittata.jpeg", "insalata.jpeg", "https://via.placeholder.com/300x200?text=In+Arrivo"];
+        const SCRIPT_URL = "IL_TUO_URL_QUI"; // <--- INCOLLA IL TUO URL QUI
         let voti = [0, 0, 0, 0];
         let currentIdx = null;
+        let immagini = ["patate.jpeg", "frittata.jpeg", "insalata.jpeg", "https://via.placeholder.com/300x200?text=Antipasto"];
 
         function openVote(idx) {
             currentIdx = idx;
             document.getElementById('focusImg').src = immagini[idx];
-            document.getElementById('focusTitle').innerText = piatti[idx];
+            document.getElementById('focusTitle').innerText = (idx==0?"Pasta e Patate":idx==1?"Frittata":idx==2?"Pasta Insalata":"Antipasto");
             document.getElementById('overlay').style.display = 'flex';
             updateStars(0);
         }
@@ -102,7 +113,7 @@
             setTimeout(() => {
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('badge' + currentIdx).style.display = 'block';
-                checkComplete();
+                if (voti.every(v => v > 0)) document.getElementById('area-invio-voto').style.display = 'block';
             }, 400);
         }
 
@@ -111,30 +122,38 @@
             stars.forEach((s, i) => s.classList.toggle('active', i < r));
         }
 
-        function checkComplete() {
-            if (voti.every(v => v > 0)) {
-                document.getElementById('area-invio').style.display = 'block';
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
+        function inviaVoti() {
+            const payload = { tipo: "voto", voti: voti, commento: document.getElementById('commentoVoto').value };
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            window.scrollTo(0,0);
         }
 
-        function inviaTutto() {
-            const btn = document.getElementById('btnInvia');
-            btn.innerText = "Invio in corso...";
-            btn.disabled = true;
+        function caricaFoto() {
+            const fileInput = document.getElementById('fileInput');
+            const dedica = document.getElementById('dedica').value;
+            if (fileInput.files.length === 0) { alert("Scegli una foto!"); return; }
 
-            const payload = {
-                voti: voti,
-                commento: document.getElementById('commento').value || "Nessun commento"
+            document.getElementById('btnFoto').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const payload = {
+                    tipo: "foto",
+                    fileName: "Foto_" + new Date().getTime() + ".jpg",
+                    fileData: e.target.result,
+                    dedica: dedica
+                };
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+                .then(() => chiudiTutto());
             };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            }).then(() => {
-                document.body.innerHTML = "<div style='padding-top:100px;'><h1>🙏 Grazie mille!</h1><p>Il tuo voto è stato registrato.<br>Buon divertimento!</p></div>";
-            }).catch(e => alert("Errore invio. Riprova!"));
+        function chiudiTutto() {
+            document.body.innerHTML = "<div style='padding-top:100px;'><h1>❤️ Grazie mille!</h1><p>Voto e dedica salvati.<br>Torna a divertirti!</p></div>";
         }
     </script>
 </body>
