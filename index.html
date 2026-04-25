@@ -112,27 +112,29 @@
 
     <div class="grid" id="mainGrid">
         <div class="card" onclick="openVote(0)" style="animation-delay: 0.1s">
-            <img src="https://via.placeholder.com/300x200?text=Pasta+e+Patate" id="img0">
+            <img src="patate.jpeg">
             <p>Pasta e Patate</p>
             <div class="voted-badge" id="badge0">Votato!</div>
         </div>
         <div class="card" onclick="openVote(1)" style="animation-delay: 0.2s">
-            <img src="https://via.placeholder.com/300x200?text=Frittata" id="img1">
+            <img src="frittata.jpeg">
             <p>Frittata</p>
             <div class="voted-badge" id="badge1">Votato!</div>
         </div>
         <div class="card" onclick="openVote(2)" style="animation-delay: 0.3s">
-            <img src="https://via.placeholder.com/300x200?text=Pasta+Insalata" id="img2">
+            <img src="insalata.jpeg">
             <p>Pasta all'insalata</p>
             <div class="voted-badge" id="badge2">Votato!</div>
         </div>
         <div class="card" onclick="openVote(3)" style="animation-delay: 0.4s">
-            <img src="https://via.placeholder.com/300x200?text=Antipasti" id="img3">
-            <p>Antipasti Misti</p>
+            <img src="rustica.jpeg">
+            <p>Pizza rustica</p>
             <div class="voted-badge" id="badge3">Votato!</div>
         </div>
     </div>
-
+    
+    <textarea id="commento" placeholder="Lascia un messaggio facoltativo..." style="width: 80%; margin: 20px auto; display: block; border-radius: 10px; padding: 10px; background: #333; color: white; border: 1px solid var(--gold);"></textarea>
+    
     <button id="btnInvia" onclick="inviaTutto()">INVIA IL SONDAGGIO 🚀</button>
 
     <div id="overlay">
@@ -189,12 +191,21 @@
         }
 
         function inviaTutto() {
-            document.getElementById('btnInvia').innerText = "Invio in corso...";
-            
-            const payload = {
-                piatto: "Voto Multiplo",
-                voto: voti.join(" - "), // Es: "5 - 4 - 3 - 5"
-                commento: "Votazione Completa"
+    document.getElementById('btnInvia').innerText = "Invio in corso...";
+    
+    const payload = {
+        voti: voti, // Invia l'array [4, 5, 3, 5]
+        commento: document.getElementById('commento').value || "Nessun commento"
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+    }).then(() => {
+        document.body.innerHTML = "<h1 style='margin-top:100px;'>🎉 Voto Ricevuto!</h1><p>Grazie per aver partecipato, goditi la festa!</p>";
+    });
+}
             };
 
             fetch(SCRIPT_URL, {
