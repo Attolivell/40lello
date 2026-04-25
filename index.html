@@ -131,26 +131,43 @@
         }
 
         function caricaFoto() {
-            const fileInput = document.getElementById('fileInput');
-            const dedica = document.getElementById('dedica').value;
-            if (fileInput.files.length === 0) { alert("Scegli una foto!"); return; }
+    const fileInput = document.getElementById('fileInput');
+    const dedica = document.getElementById('dedica').value;
+    const btn = document.getElementById('btnFoto');
 
-            document.getElementById('btnFoto').style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
+    if (fileInput.files.length === 0) { alert("Scegli una foto!"); return; }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const payload = {
-                    tipo: "foto",
-                    fileName: "Foto_" + new Date().getTime() + ".jpg",
-                    fileData: e.target.result,
-                    dedica: dedica
-                };
-                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-                .then(() => chiudiTutto());
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        }
+    btn.innerText = "Caricamento...";
+    btn.disabled = true;
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const payload = {
+            tipo: "foto",
+            fileName: "Lello_" + Date.now() + ".jpg",
+            mimeType: file.type,
+            fileData: e.target.result,
+            dedica: dedica
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            chiudiTutto();
+        })
+        .catch((err) => {
+            console.error(err);
+            alert("Errore invio! Riprova con una foto più piccola.");
+            btn.innerText = "RIPROVA";
+            btn.disabled = false;
+        });
+    };
+    reader.readAsDataURL(file);
+}
 
         function chiudiTutto() {
             document.body.innerHTML = "<div style='padding-top:100px;'><h1>❤️ Grazie mille!</h1><p>Voto e dedica salvati.<br>Torna a divertirti!</p></div>";
