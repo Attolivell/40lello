@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>40th Food Contest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark: #1a1a1a;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        /* Animazione Titolo */
+        h1 {
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 0.8s;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Griglia Piatti */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            transition: filter 0.3s ease;
+        }
+
+        /* Effetto Bounce iniziale */
+        .card {
+            background: #2a2a2a;
+            border-radius: 15px;
+            padding: 10px;
+            cursor: pointer;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+        }
+
+        .card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        /* Overlay per il Focus del Piatto */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .focus-card {
+            width: 85%;
+            max-width: 400px;
+            background: #333;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        .focus-card img { width: 100%; border-radius: 15px; }
+
+        /* Stelle */
+        .stars { margin: 20px 0; font-size: 2rem; }
+        .star { color: #555; cursor: pointer; transition: 0.2s; }
+        .star.active { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+
+        /* Bottone Invia */
+        #btnInvia {
+            display: none;
+            margin: 30px auto;
+            padding: 15px 40px;
+            background: var(--gold);
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: bounceIn 0.5s ease forwards;
+        }
+
+        .voted-badge { font-size: 0.8rem; color: var(--gold); margin-top: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h1 id="mainTitle">Clicca su un piatto per votare</h1>
+
+    <div class="grid" id="mainGrid">
+        <div class="card" onclick="openVote(0)" style="animation-delay: 0.1s">
+            <img src="https://via.placeholder.com/300x200?text=Pasta+e+Patate" id="img0">
+            <p>Pasta e Patate</p>
+            <div class="voted-badge" id="badge0">Votato!</div>
+        </div>
+        <div class="card" onclick="openVote(1)" style="animation-delay: 0.2s">
+            <img src="https://via.placeholder.com/300x200?text=Frittata" id="img1">
+            <p>Frittata</p>
+            <div class="voted-badge" id="badge1">Votato!</div>
+        </div>
+        <div class="card" onclick="openVote(2)" style="animation-delay: 0.3s">
+            <img src="https://via.placeholder.com/300x200?text=Pasta+Insalata" id="img2">
+            <p>Pasta all'insalata</p>
+            <div class="voted-badge" id="badge2">Votato!</div>
+        </div>
+        <div class="card" onclick="openVote(3)" style="animation-delay: 0.4s">
+            <img src="https://via.placeholder.com/300x200?text=Antipasti" id="img3">
+            <p>Antipasti Misti</p>
+            <div class="voted-badge" id="badge3">Votato!</div>
+        </div>
+    </div>
+
+    <button id="btnInvia" onclick="inviaTutto()">INVIA IL SONDAGGIO 🚀</button>
+
+    <div id="overlay">
+        <div class="focus-card">
+            <img src="" id="focusImg">
+            <h2 id="focusTitle"></h2>
+            <div class="stars">
+                <span class="star" onclick="setRating(1)">★</span>
+                <span class="star" onclick="setRating(2)">★</span>
+                <span class="star" onclick="setRating(3)">★</span>
+                <span class="star" onclick="setRating(4)">★</span>
+                <span class="star" onclick="setRating(5)">★</span>
+            </div>
+            <p>Tocca una stella per votare</p>
+        </div>
+    </div>
+
+    <script>
+        let piatti = ["Pasta e Patate", "Frittata", "Pasta all'insalata", "Antipasti Misti"];
+        let voti = [0, 0, 0, 0];
+        let currentPiatto = null;
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdx_4W_33ZCVrGMrjldtKCmzL25ozf60GM_ufCUu4ZNmoaeW6Uiazf8-sLDVMeKMMwug/exec"; // <--- INCOLLA QUI IL TUO URL
+
+        function openVote(index) {
+            currentPiatto = index;
+            document.getElementById('focusImg').src = document.getElementById('img' + index).src;
+            document.getElementById('focusTitle').innerText = piatti[index];
+            document.getElementById('overlay').style.display = 'flex';
+            resetStars();
+        }
+
+        function setRating(rating) {
+            voti[currentPiatto] = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((s, i) => s.classList.toggle('active', i < rating));
+            
+            // Chiudi dopo un breve delay per far vedere le stelle
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('badge' + currentPiatto).style.display = 'block';
+                checkComplete();
+            }, 500);
+        }
+
+        function resetStars() {
+            document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+        }
+
+        function checkComplete() {
+            if (voti.every(v => v > 0)) {
+                document.getElementById('btnInvia').style.display = 'block';
+                document.getElementById('mainTitle').innerText = "Tutto pronto! Invia il tuo voto.";
+            }
+        }
+
+        function inviaTutto() {
+            document.getElementById('btnInvia').innerText = "Invio in corso...";
+            
+            const payload = {
+                piatto: "Voto Multiplo",
+                voto: voti.join(" - "), // Es: "5 - 4 - 3 - 5"
+                commento: "Votazione Completa"
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            }).then(() => {
+                document.body.innerHTML = "<h1>🎉 Voto Ricevuto!</h1><p>Grazie per aver partecipato, buona festa!</p>";
+            });
+        }
+    </script>
+</body>
+</html>
