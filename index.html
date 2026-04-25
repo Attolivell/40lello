@@ -97,12 +97,12 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdx_4W_33ZCVrGMrjldtKCmzL25ozf60GM_ufCUu4ZNmoaeW6Uiazf8-sLDVMeKMMwug/exec"; // <--- INCOLLA IL TUO URL QUI
         let voti = [0, 0, 0, 0];
         let currentIdx = null;
-        let immagini = ["patate.jpeg", "frittata.jpeg", "insalata.jpeg", "https://via.placeholder.com/300x200?text=Antipasto"];
+        let immagini = ["patate.jpeg", "frittata.jpeg", "insalata.jpeg", "rustica.jpeg"];
 
         function openVote(idx) {
             currentIdx = idx;
             document.getElementById('focusImg').src = immagini[idx];
-            document.getElementById('focusTitle').innerText = (idx==0?"Pasta e Patate":idx==1?"Frittata":idx==2?"Pasta Insalata":"Antipasto");
+            document.getElementById('focusTitle').innerText = (idx==0?"Pasta e Patate":idx==1?"Frittata":idx==2?"Pasta Insalata":"Pizza rustica");
             document.getElementById('overlay').style.display = 'flex';
             updateStars(0);
         }
